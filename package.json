@@ -1,0 +1,53 @@
+{
+  "name": "docforge-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "dev": "npx tsc && node dist/index.js",
+    "gen:grpc-server": "grpc_tools_node_protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/gen/server --ts_proto_opt=esModuleInterop=true,outputServices=grpc-js,useExactTypes=false -I ./src/gen/proto src/gen/proto/*.proto",
+    "gen:grpc-web": "grpc_tools_node_protoc --proto_path=./src/gen/proto --js_out=import_style=commonjs,binary:./src/gen/client --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/gen/client ./src/gen/proto/*.proto",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "_moduleAliases": {
+    "@models": "dist/models",
+    "@routes": "dist/routes",
+    "@proto": "dist/proto/*",
+    "@shared": "dist/shared",
+    "@gen": "dist/gen"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
+    "@improbable-eng/grpc-web": "^0.15.0",
+    "@types/cors": "^2.8.17",
+    "@types/multer": "^1.4.12",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "google-protobuf": "^3.21.4",
+    "grpc-web": "^1.5.0",
+    "module-alias": "^2.2.3",
+    "mongoose": "^8.9.5",
+    "multer": "^1.4.5-lts.1",
+    "protobufjs": "^7.4.0",
+    "slug": "^10.0.0",
+    "slugify": "^1.6.6",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/google-protobuf": "^3.15.12",
+    "@types/node": "^22.12.0",
+    "@types/slug": "^5.0.9",
+    "grpc-tools": "^1.12.4",
+    "grpc_tools_node_protoc_ts": "^5.3.3",
+    "protoc-gen-grpc-web": "^1.5.0",
+    "protoc-gen-ts": "^0.8.7",
+    "ts-node": "^10.9.2",
+    "ts-proto": "^2.6.1",
+    "typescript": "^5.7.3"
+  }
+}

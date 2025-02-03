@@ -1,0 +1,237 @@
+syntax = "proto3";
+
+package vocabulary;
+
+service Vocabulary {
+  rpc v1VocabularyDirectoryCreateDefault (v1VocabularyDirectoryCreateDefaultRequest) returns (v1VocabularyDirectoryCreateDefaultResponse);
+  rpc v1VocabularyDirectoryUpdateDefault (v1VocabularyDirectoryUpdateDefaultRequest) returns (v1VocabularyDirectoryUpdateDefaultResponse);
+  rpc v1VocabularyDirectoryDeleteDefault (v1VocabularyDirectoryDeleteDefaultRequest) returns (v1VocabularyDirectoryDeleteDefaultResponse);
+  rpc v1VocabularyDirectoryListDefault (v1VocabularyDirectoryListDefaultRequest) returns (v1VocabularyDirectoryListDefaultResponse);
+  rpc v1VocabularyDirectoryReadDefault (v1VocabularyDirectoryReadDefaultRequest) returns (v1VocabularyDirectoryReadDefaultResponse);
+
+  rpc v1VocabularyDirectoryValueCreateDefault (v1VocabularyDirectoryValueCreateDefaultRequest) returns (v1VocabularyDirectoryValueCreateDefaultResponse);
+  rpc v1VocabularyDirectoryValueUpdateDefault (v1VocabularyDirectoryValueUpdateDefaultRequest) returns (v1VocabularyDirectoryValueUpdateDefaultResponse);
+  rpc v1VocabularyDirectoryValueDeleteDefault (v1VocabularyDirectoryValueDeleteDefaultRequest) returns (v1VocabularyDirectoryValueDeleteDefaultResponse);
+  rpc v1VocabularyDirectoryValueListDefault (v1VocabularyDirectoryValueListDefaultRequest) returns (v1VocabularyDirectoryValueListDefaultResponse);
+  rpc v1VocabularyDirectoryValueReadDefault (v1VocabularyDirectoryValueReadDefaultRequest) returns (v1VocabularyDirectoryValueReadDefaultResponse);
+
+  rpc v1VocabularyFieldCreateDefault (v1VocabularyFieldCreateDefaultRequest) returns (v1VocabularyFieldCreateDefaultResponse);
+  rpc v1VocabularyFieldUpdateDefault (v1VocabularyFieldUpdateDefaultRequest) returns (v1VocabularyFieldUpdateDefaultResponse);
+  rpc v1VocabularyFieldListDefault (v1VocabularyFieldListDefaultRequest) returns (v1VocabularyFieldListDefaultResponse);
+  rpc v1VocabularyFieldReadDefault (v1VocabularyFieldReadDefaultRequest) returns (v1VocabularyFieldReadDefaultResponse);
+
+  rpc v1VocabularyEntityCreateDefault (v1VocabularyEntityCreateDefaultRequest) returns (v1VocabularyEntityCreateDefaultResponse);
+  rpc v1VocabularyEntityUpdateDefault (v1VocabularyEntityUpdateDefaultRequest) returns (v1VocabularyEntityUpdateDefaultResponse);
+  rpc v1VocabularyEntityListDefault (v1VocabularyEntityListDefaultRequest) returns (v1VocabularyEntityListDefaultResponse);
+  rpc v1VocabularyEntityReadDefault (v1VocabularyEntityReadDefaultRequest) returns (v1VocabularyEntityReadDefaultResponse);
+
+}
+
+message DirectoryValueRecord {
+  string id = 1;
+  string name = 2;
+  string directoryId = 3;
+}
+
+message DirectoryRecord {
+  string id = 1;
+  string name = 2;
+}
+
+// rpc v1VocabularyDirectoryCreateDefault
+
+message v1VocabularyDirectoryCreateDefaultRequest {
+  string name = 1;
+}
+
+message v1VocabularyDirectoryCreateDefaultResponse {
+  string id = 1;
+}
+
+// rpc v1VocabularyDirectoryUpdateDefault
+
+message v1VocabularyDirectoryUpdateDefaultRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message v1VocabularyDirectoryUpdateDefaultResponse {
+  string id = 1;
+}
+
+// rpc v1VocabularyDirectoryDeleteDefault
+
+message v1VocabularyDirectoryDeleteDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryDeleteDefaultResponse {
+  string id = 1;
+}
+
+// rpc v1VocabularyDirectoryReadDefault
+message v1VocabularyDirectoryReadDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryReadDefaultResponse {
+  DirectoryRecord directory = 1;
+}
+
+// rpc v1VocabularyDirectoryListfault
+
+message v1VocabularyDirectoryListDefaultRequest {
+  
+}
+
+message v1VocabularyDirectoryListDefaultResponse {
+  repeated DirectoryRecord directory = 1;
+}
+
+// ----------------------------------------------------------------
+
+
+message v1VocabularyDirectoryValueCreateDefaultRequest {
+  string name = 1;
+  string directoryId = 2;
+}
+
+message v1VocabularyDirectoryValueCreateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryValueUpdateDefaultRequest {
+  string id = 1;
+  string name = 2;
+  string directoryId = 3;
+}
+
+message v1VocabularyDirectoryValueUpdateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryValueDeleteDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryValueDeleteDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryValueReadDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyDirectoryValueReadDefaultResponse {
+  DirectoryValueRecord directoryValue = 1;
+}
+
+message v1VocabularyDirectoryValueListDefaultRequest {
+  string directoryId = 1;
+}
+
+message v1VocabularyDirectoryValueListDefaultResponse {
+  repeated DirectoryValueRecord directoryValue = 1;
+}
+
+// ----------------------------------------------------------------
+
+
+message FieldDetail {
+  optional string label = 1;
+  optional string placeholder = 2;
+  optional string directoryId = 3;
+}
+
+message FieldRecord {
+  string id = 1;
+  string type = 2;
+  string name = 3;
+  FieldDetail detail = 4;
+}
+
+message v1VocabularyFieldCreateDefaultRequest {
+  string name = 1;
+  string type = 2;
+  FieldDetail detail = 3;
+}
+
+message v1VocabularyFieldCreateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyFieldUpdateDefaultRequest {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  FieldDetail detail = 4;
+}
+
+message v1VocabularyFieldUpdateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyFieldReadDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyFieldReadDefaultResponse {
+  FieldRecord field = 1;
+}
+
+message v1VocabularyFieldListDefaultRequest {}
+
+message v1VocabularyFieldListDefaultResponse {
+  repeated FieldRecord field = 1;
+}
+
+// ----------------------------------------------------------------
+
+message EntityRow {
+  repeated EntityDetailField detailField = 1;
+}
+
+message EntityDetailField {
+  string fieldId = 1;
+  int32 pos = 2;
+  int32 col = 3;
+}
+
+message EntityRecord {
+  string id = 1;
+  string name = 3;
+  repeated EntityRow rows = 4;
+}
+
+message v1VocabularyEntityCreateDefaultRequest {
+  string name = 1;
+  repeated EntityRow rows = 2;
+}
+
+message v1VocabularyEntityCreateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyEntityUpdateDefaultRequest {
+  string id = 1;
+  string name = 2;
+  repeated EntityRow rows = 3;
+}
+
+message v1VocabularyEntityUpdateDefaultResponse {
+  string id = 1;
+}
+
+message v1VocabularyEntityReadDefaultRequest {
+  string id = 1;
+}
+
+message v1VocabularyEntityReadDefaultResponse {
+  EntityRecord entity = 1;
+}
+
+message v1VocabularyEntityListDefaultRequest {}
+
+message v1VocabularyEntityListDefaultResponse {
+  repeated EntityRecord entity = 1;
+}
