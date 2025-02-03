@@ -1,0 +1,1 @@
+export { GrpcError } from './grpc-error';
