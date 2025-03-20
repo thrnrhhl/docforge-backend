@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+import { FieldDocument } from "./field";
 
 interface Entity extends mongoose.Document {
   name: string;
+  fieldRefs: mongoose.PopulatedDoc<FieldDocument>[];
   rows: Array<
     Array<{
       fieldId: string;
@@ -11,6 +13,15 @@ interface Entity extends mongoose.Document {
   >;
 }
 
+const FieldSchema = new mongoose.Schema(
+  {
+    fieldId: { type: String, required: true },
+    pos: { type: Number, required: true },
+    col: { type: Number, required: true }
+  },
+  { _id: false }
+);
+
 const schema = new mongoose.Schema<Entity>(
   {
     name: {
@@ -18,13 +29,14 @@ const schema = new mongoose.Schema<Entity>(
       required: true,
       unique: true,
     },
-    rows: [
-      [
-        {
-          type: Object,
-        },
-      ],
-    ],
+    fieldRefs: {
+      type: [{ type: mongoose.Schema.Types.ObjectId }],
+      default: []
+    },
+    rows: {
+      type: [[FieldSchema]],
+      default: []
+    },
   },
   {
     timestamps: true,
@@ -34,3 +46,14 @@ const schema = new mongoose.Schema<Entity>(
 export interface EntityDocument extends Document {}
 
 export const Entity = mongoose.model("entity", schema);
+
+
+
+
+export interface EntityDetailField {
+  entityRef: string;
+  fieldId: string;
+  pos: number;
+  col: number;
+  rowIndex: number;
+}; 

@@ -1,55 +1,44 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
 import { Directory, DirectoryValue } from "@models";
 import slugify from "slugify";
-import { GrpcError } from "@shared/constants";
-import {
-  v1VocabularyDirectoryValueCreateDefaultRequest,
-  v1VocabularyDirectoryValueCreateDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyDirectoryValueCreateDefaultRequest, VocabularyDirectoryValueCreateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyDirectoryValueCreateDefault(
-  call: ServerUnaryCall<
-    v1VocabularyDirectoryValueCreateDefaultRequest,
-    v1VocabularyDirectoryValueCreateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryValueCreateDefaultResponse>
+export async function vocabularyDirectoryValueCreateDefault(
+  args: VocabularyDirectoryValueCreateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
-    const directoryDocument = await Directory.findById(
-      call.request.directoryId
+    const directoryDoc = await Directory.findById(
+      args.directoryId
     );
 
-    if (!directoryDocument) {
-      return callback(
-        {
-          code: status.INVALID_ARGUMENT,
-          message: GrpcError.DIRECTORY_NOT_FOUND,
-        },
-        null
-      );
+    if (!directoryDoc) {
+      return jsonRpcError({
+        callback,
+        errorTypeMnemocode: JsonRpcErrorTypeMnemocode.DirectoryNotFount
+      })
     }
 
-    const directoryValueDocument = await DirectoryValue.create({
-      name: call.request.name,
-      value: slugify(call.request.name),
-      directoryRef: call.request.directoryId,
+    const directoryValueCreateDoc = await DirectoryValue.create({
+      name: args.name,
+      value: slugify(args.name),
+      directoryRef: args.directoryId,
     });
 
-    const response = v1VocabularyDirectoryValueCreateDefaultResponse.create({
-      id: directoryValueDocument.id,
-    });
-
-    callback(null, response);
+    jsonRpcResult<VocabularyDirectoryValueCreateDefaultResponse>({
+      callback,
+      result: {
+        id: directoryValueCreateDoc.id
+      }
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_SAVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

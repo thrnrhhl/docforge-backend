@@ -1,62 +1,50 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
 import { Directory, Field } from "@models";
-import {
-  v1VocabularyFieldUpdateDefaultRequest,
-  v1VocabularyFieldUpdateDefaultResponse,
-} from "@gen/server/vocabulary";
-import { GrpcError } from "@shared/constants";
+import { VocabularyFieldUpdateDefaultRequest, VocabularyFieldUpdateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyFieldUpdateDefault(
-  call: ServerUnaryCall<
-    v1VocabularyFieldUpdateDefaultRequest,
-    v1VocabularyFieldUpdateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyFieldUpdateDefaultResponse>
+export async function vocabularyFieldUpdateDefault(
+  args: VocabularyFieldUpdateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
-    if (call.request.detail?.directoryId) {
+    if (args.detail?.directoryId) {
       const directoryDocument = await Directory.findById(
-        call.request.detail.directoryId
+        args.detail.directoryId
       );
 
       if (!directoryDocument) {
-        return callback(
-          {
-            code: status.INVALID_ARGUMENT,
-            message: GrpcError.DIRECTORY_NOT_FOUND,
-          },
-          null
-        );
+        return jsonRpcError({
+          callback,
+          errorTypeMnemocode: JsonRpcErrorTypeMnemocode.DirectoryNotFount
+        })
       }
     }
 
     await Field.findOneAndUpdate(
       {
-        _id: call.request.id,
+        _id: args.id,
       },
       {
-        name: call.request.name,
-        type: call.request.type,
-        detail: call.request.detail,
+        name: args.name,
+        type: args.type,
+        detail: args.detail,
       }
     );
 
-    const response = v1VocabularyFieldUpdateDefaultResponse.create({
-      id: call.request.id,
-    });
-
-    callback(null, response);
+    jsonRpcResult<VocabularyFieldUpdateDefaultResponse>({
+      callback,
+      result: {
+        id: args.id,
+      }
+    })
   } catch (e) {
-    console.log(e);
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_UPDATING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

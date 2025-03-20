@@ -1,4 +1,4 @@
-export { v1VocabularyEntityCreateDefault } from "./create-default/handler";
-export { v1VocabularyEntityUpdateDefault } from "./update-default/handler";
-export { v1VocabularyEntityListDefault } from "./list-default/handler";
-export { v1VocabularyEntityReadDefault } from "./read-default/handler";
+export { vocabularyEntityCreateDefault } from "./create-default/handler";
+export { vocabularyEntityUpdateDefault } from "./update-default/handler";
+export { vocabularyEntityListDefault } from "./list-default/handler";
+export { vocabularyEntityReadDefault } from "./read-default/handler";

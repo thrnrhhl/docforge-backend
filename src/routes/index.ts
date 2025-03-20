@@ -1,49 +1,34 @@
-import {
-  v1VocabularyDirectoryCreateDefault,
-  v1VocabularyDirectoryListDefault,
-  v1VocabularyDirectoryUpdateDefault,
-  v1VocabularyDirectoryReadDefault,
+export {
+  vocabularyDirectoryCreateDefault,
+  vocabularyDirectoryListDefault,
+  vocabularyDirectoryUpdateDefault,
+  vocabularyDirectoryReadDefault,
 } from "./vocabulary/directory";
 
-import {
-  v1VocabularyDirectoryValueCreateDefault,
-  v1VocabularyDirectoryValueListDefault,
-  v1VocabularyDirectoryValueUpdateDefault,
-  v1VocabularyDirectoryValueReadDefault,
+export {
+  vocabularyDirectoryValueCreateDefault,
+  vocabularyDirectoryValueListDefault,
+  vocabularyDirectoryValueUpdateDefault,
+  vocabularyDirectoryValueReadDefault,
 } from "./vocabulary/directory-value";
 
-import {
-  v1VocabularyFieldCreateDefault,
-  v1VocabularyFieldUpdateDefault,
-  v1VocabularyFieldListDefault,
-  v1VocabularyFieldReadDefault,
+export {
+  vocabularyFieldCreateDefault,
+  vocabularyFieldUpdateDefault,
+  vocabularyFieldListDefault,
+  vocabularyFieldReadDefault,
 } from "./vocabulary/field";
 
-import {
-  v1VocabularyEntityCreateDefault,
-  v1VocabularyEntityUpdateDefault,
-  v1VocabularyEntityListDefault,
-  v1VocabularyEntityReadDefault,
+export {
+  vocabularyEntityCreateDefault,
+  vocabularyEntityUpdateDefault,
+  vocabularyEntityListDefault,
+  vocabularyEntityReadDefault,
 } from "./vocabulary/entity";
 
-export const vocabularyServiceMethods = {
-  v1VocabularyDirectoryCreateDefault,
-  v1VocabularyDirectoryUpdateDefault,
-  v1VocabularyDirectoryListDefault,
-  v1VocabularyDirectoryReadDefault,
-
-  v1VocabularyDirectoryValueCreateDefault,
-  v1VocabularyDirectoryValueListDefault,
-  v1VocabularyDirectoryValueUpdateDefault,
-  v1VocabularyDirectoryValueReadDefault,
-
-  v1VocabularyFieldCreateDefault,
-  v1VocabularyFieldUpdateDefault,
-  v1VocabularyFieldListDefault,
-  v1VocabularyFieldReadDefault,
-
-  v1VocabularyEntityCreateDefault,
-  v1VocabularyEntityUpdateDefault,
-  v1VocabularyEntityListDefault,
-  v1VocabularyEntityReadDefault,
-};
+export {
+  vocabularyEntityRecordCreateDefault,
+  vocabularyEntityRecordUpdateDefault,
+  vocabularyEntityRecordListDefault,
+  vocabularyEntityRecordReadDefault,
+} from "./vocabulary/entity-record";

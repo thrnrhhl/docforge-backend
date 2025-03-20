@@ -1,52 +1,39 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { Entity } from "@models";
 import { schema } from "./model";
-import { GrpcError } from "../../../../shared/constants";
-import {
-  v1VocabularyEntityReadDefaultRequest,
-  v1VocabularyEntityReadDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyEntityReadDefaultRequest, VocabularyEntityReadDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyEntityReadDefault(
-  call: ServerUnaryCall<
-    v1VocabularyEntityReadDefaultRequest,
-    v1VocabularyEntityReadDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyEntityReadDefaultResponse>
+export async function vocabularyEntityReadDefault(
+  args: VocabularyEntityReadDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
     const entityDocument = await Entity.findOne({
-      _id: call.request.id,
+      _id: args.id,
     });
 
     if (!entityDocument) {
-      return callback(
-        {
-          code: status.INVALID_ARGUMENT,
-          message: GrpcError.ENTITY_NOT_FOUND,
-        },
-        null
-      );
+      return jsonRpcError({
+        callback,
+        errorTypeMnemocode: JsonRpcErrorTypeMnemocode.EntityNotFound
+      })
     }
 
-    const response = v1VocabularyEntityReadDefaultResponse.create({
-      entity: {
+    jsonRpcResult<VocabularyEntityReadDefaultResponse>({
+      callback,
+      result: {
         id: entityDocument.id,
         name: entityDocument.name,
-        rows: entityDocument.rows.map((key) => ({ detailField: key })),
-      },
-    });
-
-    callback(null, response);
+        rows: entityDocument.rows
+      }
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_RECEIVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

@@ -1,42 +1,29 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
 import { Entity } from "@models";
-import { GrpcError } from "@shared/constants";
-import {
-  v1VocabularyEntityCreateDefaultRequest,
-  v1VocabularyEntityCreateDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyEntityCreateDefaultRequest, VocabularyEntityCreateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyEntityCreateDefault(
-  call: ServerUnaryCall<
-    v1VocabularyEntityCreateDefaultRequest,
-    v1VocabularyEntityCreateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyEntityCreateDefaultResponse>
+export async function vocabularyEntityCreateDefault(
+  args: VocabularyEntityCreateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    const formattingRows = call.request.rows.map(key => key.detailField)
+    await schema.validate({name: args.name, rows: args.rows});
 
-    await schema.validate(formattingRows);
-
-    const entityNewDocument = await Entity.create({
-      name: call.request.name,
-      rows: formattingRows
+    const entityCreateDoc = await Entity.create({
+      name: args.name,
+      rows: args.rows
     });
 
-    const response = v1VocabularyEntityCreateDefaultResponse.create({
-      id: entityNewDocument.id,
+    jsonRpcResult<VocabularyEntityCreateDefaultResponse>({
+      callback,
+      result: { id: entityCreateDoc.id }
     });
-
-    callback(null, response);
   } catch (e) {
-    console.log(e);
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_SAVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    });
   }
 }

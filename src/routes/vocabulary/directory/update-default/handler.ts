@@ -1,48 +1,39 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
 import { Directory } from "@models";
 import slugify from "slugify";
-import {
-  v1VocabularyDirectoryUpdateDefaultRequest,
-  v1VocabularyDirectoryUpdateDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyDirectoryUpdateDefaultRequest, VocabularyDirectoryUpdateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyDirectoryUpdateDefault(
-  call: ServerUnaryCall<
-    v1VocabularyDirectoryUpdateDefaultRequest,
-    v1VocabularyDirectoryUpdateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryUpdateDefaultResponse>
+export async function vocabularyDirectoryUpdateDefault(
+  args: VocabularyDirectoryUpdateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
-    const slugName = slugify(call.request.name);
+    const slugName = slugify(args.name);
 
-    const directoryDocument = await Directory.findOneAndUpdate(
+    const directoryDoc = await Directory.findOneAndUpdate(
       {
-        _id: call.request.id,
+        _id: args.id,
       },
       {
-        name: call.request.name,
+        name: args.name,
         code: slugName,
       }
     );
 
-    const response = v1VocabularyDirectoryUpdateDefaultResponse.create(
-      {
-        id: directoryDocument!.id,
+    jsonRpcResult<VocabularyDirectoryUpdateDefaultResponse>({
+      callback,
+      result: {
+        id: directoryDoc!.id
       }
-    );
-
-    callback(null, response);
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: "Произошла ошибка при обновлении справочника.",
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

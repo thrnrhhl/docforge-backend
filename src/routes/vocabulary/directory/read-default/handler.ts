@@ -1,49 +1,36 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { Directory } from "@models";
 import { schema } from "./model";
-import { GrpcError } from "../../../../shared/constants";
-import {
-  v1VocabularyDirectoryReadDefaultRequest,
-  v1VocabularyDirectoryReadDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyDirectoryReadDefaultRequest, VocabularyDirectoryReadDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyDirectoryReadDefault(
-  call: ServerUnaryCall<
-    v1VocabularyDirectoryReadDefaultRequest,
-    v1VocabularyDirectoryReadDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryReadDefaultResponse>
+export async function vocabularyDirectoryReadDefault(
+  args: VocabularyDirectoryReadDefaultRequest,
+  __: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
-    const directoryDocument = await Directory.findOne({ _id: call.request.id });
+    const directoryDoc = await Directory.findOne({ _id: args.id });
 
-    if (!directoryDocument) {
-      return callback(
-        {
-          code: status.INVALID_ARGUMENT,
-          message: GrpcError.DIRECTORY_NOT_FOUND,
-        },
-        null
-      );
+    if (!directoryDoc) {
+      return jsonRpcError({
+        callback,
+        errorTypeMnemocode: JsonRpcErrorTypeMnemocode.DirectoryNotFount
+      })
     }
 
-    const response = v1VocabularyDirectoryReadDefaultResponse.create({
-      directory: {
-        id: directoryDocument.id,
-        name: directoryDocument.name,
-      },
-    });
-
-    callback(null, response);
+    jsonRpcResult<VocabularyDirectoryReadDefaultResponse>({
+      callback,
+      result: {
+        id: directoryDoc.id,
+        name: directoryDoc.name,
+      }
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_RECEIVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

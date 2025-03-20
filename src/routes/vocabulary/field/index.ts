@@ -1,4 +1,4 @@
-export { v1VocabularyFieldCreateDefault } from "./create-default/handler";
-export { v1VocabularyFieldUpdateDefault } from "./update-default/handler";
-export { v1VocabularyFieldListDefault } from "./list-default/handler";
-export { v1VocabularyFieldReadDefault } from "./read-default/handler";
+export { vocabularyFieldCreateDefault } from "./create-default/handler";
+export { vocabularyFieldUpdateDefault } from "./update-default/handler";
+export { vocabularyFieldListDefault } from "./list-default/handler";
+export { vocabularyFieldReadDefault } from "./read-default/handler";

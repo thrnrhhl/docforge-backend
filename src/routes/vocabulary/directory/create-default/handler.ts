@@ -1,41 +1,35 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
 import { Directory } from "@models";
 import slugify from "slugify";
-import {
-  v1VocabularyDirectoryCreateDefaultRequest,
-  v1VocabularyDirectoryCreateDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyDirectoryCreateDefaultRequest, VocabularyDirectoryCreateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyDirectoryCreateDefault(
-  call: ServerUnaryCall<
-  v1VocabularyDirectoryCreateDefaultRequest,
-  v1VocabularyDirectoryCreateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryCreateDefaultResponse>
+export async function vocabularyDirectoryCreateDefault(
+  args: VocabularyDirectoryCreateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
-    const slugName = slugify(call.request.name);
+    const slugName = slugify(args.name);
 
-    const directoryDocument = await Directory.create({
-      name: call.request.name,
+    const directoryDoc = await Directory.create({
+      name: args.name,
       code: slugName,
     });
 
-    const response = v1VocabularyDirectoryCreateDefaultResponse.create({
-      id: directoryDocument.id,
-    });
 
-    callback(null, response);
+    jsonRpcResult<VocabularyDirectoryCreateDefaultResponse>({
+      callback,
+      result: {
+        id: directoryDoc.id
+      }
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: "Произошла ошибка при создании справочника.",
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }
