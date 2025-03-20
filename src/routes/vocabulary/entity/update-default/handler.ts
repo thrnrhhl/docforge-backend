@@ -1,47 +1,39 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { schema } from "./model";
-import { Directory, Entity } from "@models";
-import {
-  v1VocabularyEntityUpdateDefaultRequest,
-  v1VocabularyEntityUpdateDefaultResponse,
-} from "@gen/server/vocabulary";
-import { GrpcError } from "@shared/constants";
+import { Entity } from "@models";
+import { VocabularyEntityUpdateDefaultRequest, VocabularyEntityUpdateDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyEntityUpdateDefault(
-  call: ServerUnaryCall<
-    v1VocabularyEntityUpdateDefaultRequest,
-    v1VocabularyEntityUpdateDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyEntityUpdateDefaultResponse>
+export async function vocabularyEntityUpdateDefault(
+  args: VocabularyEntityUpdateDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    const formattingRows = call.request.rows.map(key => key.detailField)
 
-    await schema.validate(call.request);
+    await schema.validate({ id: args.id, name: args.name, rows: args.rows});
 
 
     await Entity.findOneAndUpdate(
       {
-        _id: call.request.id,
+        _id: args.id,
       },
       {
-        name: call.request.name,
-        rows: formattingRows,
+        name: args.name,
+        rows: args.rows,
       }
     );
 
-    const response = v1VocabularyEntityUpdateDefaultResponse.create({
-      id: call.request.id,
-    });
 
-    callback(null, response);
+    jsonRpcResult<VocabularyEntityUpdateDefaultResponse>({
+      callback,
+      result: {
+        id: args.id
+      }
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_UPDATING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

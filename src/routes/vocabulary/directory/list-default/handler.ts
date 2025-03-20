@@ -1,29 +1,23 @@
-import { v1VocabularyDirectoryListDefaultRequest, v1VocabularyDirectoryListDefaultResponse } from "@gen/server/vocabulary";
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { Directory } from "@models";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
+import { VocabularyDirectoryListDefaultRequest, VocabularyDirectoryListDefaultResponse } from "types";
 
-export async function v1VocabularyDirectoryListDefault(
-  call: ServerUnaryCall<
-  v1VocabularyDirectoryListDefaultRequest,
-  v1VocabularyDirectoryListDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryListDefaultResponse>
+export async function vocabularyDirectoryListDefault(
+  _: VocabularyDirectoryListDefaultRequest,
+  __: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    const directoryDocuments = await Directory.find();
+    const directoryDocs = await Directory.find();
 
-    const response = v1VocabularyDirectoryListDefaultResponse.create({
-      directory: directoryDocuments.map(key => ({id: key.id, name: key.name}))
-    });
-
-    callback(null, response);
+    jsonRpcResult<VocabularyDirectoryListDefaultResponse>({
+      callback,
+      result: directoryDocs.map(key => ({id: key.id, name: key.name}))
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: "Произошла ошибка при получении справочников.",
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

@@ -1,4 +1,4 @@
-export { v1VocabularyDirectoryCreateDefault } from './create-default/handler';
-export { v1VocabularyDirectoryUpdateDefault } from './update-default/handler';
-export { v1VocabularyDirectoryListDefault } from './list-default/handler';
-export { v1VocabularyDirectoryReadDefault } from './read-default/handler';
+export { vocabularyDirectoryCreateDefault } from './create-default/handler';
+export { vocabularyDirectoryUpdateDefault } from './update-default/handler';
+export { vocabularyDirectoryListDefault } from './list-default/handler';
+export { vocabularyDirectoryReadDefault } from './read-default/handler';

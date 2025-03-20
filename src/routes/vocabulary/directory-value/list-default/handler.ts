@@ -1,40 +1,29 @@
-import {
-  v1VocabularyDirectoryValueListDefaultRequest,
-  v1VocabularyDirectoryValueListDefaultResponse,
-} from "@gen/server/vocabulary";
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
-
 import { DirectoryValue } from "@models";
-import { GrpcError } from "@shared/constants";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
+import { VocabularyDirectoryValueListDefaultRequest, VocabularyDirectoryValueListDefaultResponse } from "types";
 
-export async function v1VocabularyDirectoryValueListDefault(
-  call: ServerUnaryCall<
-    v1VocabularyDirectoryValueListDefaultRequest,
-    v1VocabularyDirectoryValueListDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyDirectoryValueListDefaultResponse>
+export async function vocabularyDirectoryValueListDefault(
+  args: VocabularyDirectoryValueListDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
     const directoryDocuments = await DirectoryValue.find({
-      directoryRef: call.request.directoryId,
+      directoryRef: args.directoryId,
     });
 
-    const response = v1VocabularyDirectoryValueListDefaultResponse.create({
-      directoryValue: directoryDocuments.map((key) => ({
+    jsonRpcResult<VocabularyDirectoryValueListDefaultResponse>({
+      callback,
+      result: directoryDocuments.map((key) => ({
         id: key.id,
         name: key.name,
         directoryId: String(key.directoryRef),
-      })),
-    });
-
-    callback(null, response);
+      }))
+    })
   } catch (e) {
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_RECEIVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }

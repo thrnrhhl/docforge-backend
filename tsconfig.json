@@ -17,7 +17,6 @@
       "@middlewares": ["middlewares"],
       "@utils/*": ["utils/*"],
       "@shared/*": ["shared/*"],
-      "@gen/*": ["gen/*"],
     }
   },
   "include": ["src"]

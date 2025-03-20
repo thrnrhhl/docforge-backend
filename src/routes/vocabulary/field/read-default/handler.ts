@@ -1,54 +1,40 @@
-import { ServerUnaryCall, sendUnaryData, status } from "@grpc/grpc-js";
 import { Field } from "@models";
 import { schema } from "./model";
-import { GrpcError } from "../../../../shared/constants";
-import {
-  v1VocabularyFieldReadDefaultRequest,
-  v1VocabularyFieldReadDefaultResponse,
-} from "@gen/server/vocabulary";
+import { VocabularyFieldReadDefaultRequest, VocabularyFieldReadDefaultResponse } from "types";
+import { JsonRpcCallback, JsonRpcContext, JsonRpcErrorTypeMnemocode, jsonRpcError, jsonRpcResult } from "@shared/jsonrpc";
 
-export async function v1VocabularyFieldReadDefault(
-  call: ServerUnaryCall<
-  v1VocabularyFieldReadDefaultRequest,
-    v1VocabularyFieldReadDefaultResponse
-  >,
-  callback: sendUnaryData<v1VocabularyFieldReadDefaultResponse>
+export async function vocabularyFieldReadDefault(
+  args: VocabularyFieldReadDefaultRequest,
+  _: JsonRpcContext,
+  callback: JsonRpcCallback
 ) {
   try {
-    await schema.validate(call.request);
+    await schema.validate(args);
 
     const fieldDocument = await Field.findOne({
-      _id: call.request.id,
+      _id: args.id,
     });
 
     if (!fieldDocument) {
-      return callback(
-        {
-          code: status.INVALID_ARGUMENT,
-          message: GrpcError.ENTITY_NOT_FOUND,
-        },
-        null
-      );
+      return jsonRpcError({
+        callback,
+        errorTypeMnemocode: JsonRpcErrorTypeMnemocode.FieldNotFound
+      })
     }
 
-    const response = v1VocabularyFieldReadDefaultResponse.create({
-      field: {
+    jsonRpcResult<VocabularyFieldReadDefaultResponse>({
+      callback,
+      result: {
         id: fieldDocument.id,
         name: fieldDocument.name,
         type: fieldDocument.type,
         detail: fieldDocument.detail
-      },
-    });
-
-    callback(null, response);
+      }
+    })
   } catch (e) {
-    console.log(e);
-    callback(
-      {
-        code: status.INVALID_ARGUMENT,
-        message: GrpcError.AN_ERROR_OCCURRED_WHILE_RECEIVING_THE_DATA,
-      },
-      null
-    );
+    jsonRpcError({
+      callback,
+      errorTypeMnemocode: JsonRpcErrorTypeMnemocode.UnknownError
+    })
   }
 }
